@@ -6,12 +6,21 @@ namespace number_guessing
     {
         static void Main(string[] args)
         {
-            var rangeValidator = new RangeValidator(1, 100);
-            var game = new Game(new ConsoleOutput(), rangeValidator);
+            bool playAgain = true;
 
-            // Change range dynamically
-            game.UpdateRange(20, 80);
-            game.Play();
+            while (playAgain)
+            {
+                var validator = new RangeValidator(1, 100);
+                var game = new Game(new ConsoleOutput(), validator);
+
+                game.UpdateRange(9, 5);
+                game.Play();
+
+                Console.WriteLine("Do you want to play again? y for yes");
+                var input = Console.ReadLine().ToLower();
+
+                playAgain = input == "y";
+            }
         }
     }
 }

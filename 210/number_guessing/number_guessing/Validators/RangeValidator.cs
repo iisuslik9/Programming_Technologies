@@ -39,7 +39,7 @@ namespace number_guessing.Validators
                     _max = value;
             }
         }
-
+        //метод проверки числа
         public ValidationResult Validate(int input)
         {
             if (input < _min || input > _max)
