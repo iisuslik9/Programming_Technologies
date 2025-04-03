@@ -13,20 +13,31 @@ namespace number_guessing.Validators
 
         public RangeValidator(int min, int max)
         {
-            _min = min;
-            _max = max;
+            if (max > min)
+            {
+                _min = min;
+                _max = max;
+            }               
         }
 
         public int Min
         {
             get => _min;
-            set => _min = value;
+            set
+            {
+                if (value < _max)
+                    _min = value;
+            }
         }
 
         public int Max
         {
             get => _max;
-            set => _max = value;
+            set
+            {
+                if (value > _min)
+                    _max = value;
+            }
         }
 
         public ValidationResult Validate(int input)
