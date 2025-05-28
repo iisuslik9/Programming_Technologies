@@ -18,7 +18,7 @@ namespace Tanks
 
             while (!exit)
             {
-                Console.Clear();
+                //Console.Clear();
                 Console.WriteLine("=== меню ===");
                 Console.WriteLine("1. Количество резервуаров и кстановок");
                 Console.WriteLine("2. Установка резервуара 2");
@@ -58,10 +58,11 @@ namespace Tanks
                         PrintAllTanksInfo(tanks, units, factories);
                         break;
                     case "6":
-                        Console.WriteLine("Вы выбрали: Найти резервуар по имени");
-                        Console.Write("Введите имя резервуара: ");
-                        string tankName = Console.ReadLine();
-                        // Здесь вызов метода поиска резервуара по имени
+                        Console.WriteLine("Выбран 5");
+                        Console.WriteLine("Введите название резервуара для поиска:");
+                        string inputName = Console.ReadLine();
+                        List<Tank> foundTanks = FindTankByName(tanks, inputName);
+                        PrintFoundTanksInfo(foundTanks, units, factories);
                         break;                   
                     case "0":
                         Console.WriteLine("Выход из программы...");
@@ -79,18 +80,6 @@ namespace Tanks
                 }
             }
 
-            //var tanks = GetTanks();
-            //var units = GetUnits();
-            //var factories = GetFactories();
-            //Console.WriteLine($"Количество резервуаров: {tanks.Length}, установок: {units.Length}");
-
-            //var foundUnit = FindUnit(units, tanks, "Резервуар 2");
-            //var factory = FindFactory(factories, foundUnit);
-
-            //Console.WriteLine($"Резервуар 2 принадлежит установке {foundUnit.Name} и заводу {factory.Name}");
-
-            //var totalVolume = GetTotalVolume(tanks);
-            //Console.WriteLine($"Общий объем резервуаров: {totalVolume}");
         }
 
         // реализуйте этот метод, чтобы он возвращал массив резервуаров, согласно приложенным таблицам
@@ -187,7 +176,7 @@ namespace Tanks
             return totalMaxVolume;
         }
 
-        // Выводит в консоль все резервуары с указанием установки и завода
+        
         public static void PrintAllTanksInfo(Tank[] tanks, Unit[] units, Factory[] factories)
         {
             
@@ -203,10 +192,47 @@ namespace Tanks
                 Console.WriteLine($"  Установка: {unit?.Name ?? "Не найден"}");
                 Console.WriteLine($"  Завод: {factory?.Name ?? "Не найден"}");
                 Console.WriteLine(new string('-', 40));
+            }           
+        }
+    
+        public static List<Tank> FindTankByName(Tank[] tanks, string searchTerm)
+        {
+            List<Tank> results = new List<Tank>();
+
+            foreach (Tank tank in tanks)
+            {
+                if (tank.Name.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    results.Add(tank);
+                }
             }
 
-            
+            return results;
         }
+
+        // Печать информации о резервуаре с указанием цеха (установки) и фабрики
+        public static void PrintFoundTanksInfo(List<Tank> foundTanks, Unit[] units, Factory[] factories)
+        {
+            if (foundTanks == null || foundTanks.Count == 0)
+            {
+                Console.WriteLine("Резервуары не найдены.");
+                return;
+            }
+
+
+            foreach (var tank in foundTanks)
+            {
+                var unit = Array.Find(units, u => u.Id == tank.UnitId);
+                var factory = unit != null ? Array.Find(factories, f => f.Id == unit.FactoryId) : null;
+
+                Console.WriteLine($"Резервуар: {tank.Name}, Описание: {tank.Description}, Объем: {tank.Volume} / {tank.MaxVolume},\n" +
+                $"Установка: {unit?.Name ?? "Не найден"}, Завод: {factory?.Name ?? "Не найден"}");
+
+                Console.WriteLine(new string('-', 40));
+            }
+        }
+
+
     }
 
 
