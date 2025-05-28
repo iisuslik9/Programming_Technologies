@@ -210,7 +210,6 @@ namespace Tanks
             return results;
         }
 
-        // Печать информации о резервуаре с указанием цеха (установки) и фабрики
         public static void PrintFoundTanksInfo(List<Tank> foundTanks, Unit[] units, Factory[] factories)
         {
             if (foundTanks == null || foundTanks.Count == 0)
