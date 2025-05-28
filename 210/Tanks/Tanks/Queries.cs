@@ -8,7 +8,7 @@ namespace Tanks
 {
     public static class Queries
     {
-        //Количество резервуаров и установок
+    
 
         public static (int tanksCount, int unitsCount) GetCountsQuery(Tank[] tanks, Unit[] units)
         {
@@ -22,7 +22,7 @@ namespace Tanks
             return (tanks.Length, units.Length);
         }
 
-        //Найти установку по имени резервуара
+       
 
         public static Unit FindUnitByTankNameQuery(Unit[] units, Tank[] tanks, string tankName)
         {
@@ -40,7 +40,7 @@ namespace Tanks
                         .FirstOrDefault();
         }
 
-        //Найти завод по установке
+  
 
         public static Factory FindFactoryByUnitQuery(Factory[] factories, Unit unit)
         {
@@ -55,7 +55,7 @@ namespace Tanks
             return factories.FirstOrDefault(f => f.Id == unit.FactoryId);
         }
 
-        //Общий объем
+
 
         public static int GetTotalVolumeQuery(Tank[] tanks)
         {
@@ -68,7 +68,6 @@ namespace Tanks
             return tanks.Sum(t => t.Volume);
         }
 
-        //Общая максимальная загрузка резервуаров
 
         public static int GetTotalMaxVolumeQuery(Tank[] tanks)
         {
@@ -81,7 +80,7 @@ namespace Tanks
             return tanks.Sum(t => t.MaxVolume);
         }
 
-        // Поиск резервуаров по имени
+
 
         public static List<Tank> FindTanksByNameQuery(Tank[] tanks, string searchTerm)
         {
@@ -95,5 +94,112 @@ namespace Tanks
         {
             return tanks.Where(t => t.Name.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
         }
+
+        public static void PrintAllTanksInfoQuery(Tank[] tanks, Unit[] units, Factory[] factories)
+        {
+            Console.WriteLine("Список всех резервуаров с цехами и фабриками:");
+
+            var query = from tank in tanks
+                        join unit in units on tank.UnitId equals unit.Id into unitGroup
+                        from unit in unitGroup.DefaultIfEmpty()
+                        join factory in factories on unit?.FactoryId equals factory.Id into factoryGroup
+                        from factory in factoryGroup.DefaultIfEmpty()
+                        select new { tank, unit, factory };
+
+            foreach (var item in query)
+            {
+                Console.WriteLine($"Резервуар: {item.tank.Name} (Объем: {item.tank.Volume}/{item.tank.MaxVolume})");
+                Console.WriteLine($"  Установка: {item.unit?.Name ?? "Не найден"}");
+                Console.WriteLine($"  Завод: {item.factory?.Name ?? "Не найден"}");
+                Console.WriteLine(new string('-', 40));
+            }
+        }
+
+        public static void PrintAllTanksInfoMethod(Tank[] tanks, Unit[] units, Factory[] factories)
+        {
+            Console.WriteLine("Список всех резервуаров с цехами и фабриками:");
+
+            var list = tanks.GroupJoin(units,
+                                      tank => tank.UnitId,
+                                      unit => unit.Id,
+                                      (tank, unitGroup) => new { tank, unit = unitGroup.FirstOrDefault() })
+                            .GroupJoin(factories,
+                                       tu => tu.unit?.FactoryId,
+                                       factory => factory.Id,
+                                       (tu, factoryGroup) => new { tu.tank, tu.unit, factory = factoryGroup.FirstOrDefault() });
+
+            foreach (var item in list)
+            {
+                Console.WriteLine($"Резервуар: {item.tank.Name} (Объем: {item.tank.Volume}/{item.tank.MaxVolume})");
+                Console.WriteLine($"  Установка: {item.unit?.Name ?? "Не найден"}");
+                Console.WriteLine($"  Завод: {item.factory?.Name ?? "Не найден"}");
+                Console.WriteLine(new string('-', 40));
+            }
+        }
+
+   
+
+        public static List<Tank> FindTankByNameQuery(Tank[] tanks, string searchTerm)
+        {
+            var query = from tank in tanks
+                        where tank.Name.IndexOf(searchTerm ?? "", StringComparison.OrdinalIgnoreCase) >= 0
+                        select tank;
+            return query.ToList();
+        }
+
+        public static List<Tank> FindTankByNameMethod(Tank[] tanks, string searchTerm)
+        {
+            return tanks.Where(t => t.Name.IndexOf(searchTerm ?? "", StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+        }
+
+
+        public static void PrintFoundTanksInfoQuery(List<Tank> foundTanks, Unit[] units, Factory[] factories)
+        {
+            if (foundTanks == null || foundTanks.Count == 0)
+            {
+                Console.WriteLine("Резервуары не найдены.");
+                return;
+            }
+
+            var query = from tank in foundTanks
+                        join unit in units on tank.UnitId equals unit.Id into unitGroup
+                        from unit in unitGroup.DefaultIfEmpty()
+                        join factory in factories on unit?.FactoryId equals factory.Id into factoryGroup
+                        from factory in factoryGroup.DefaultIfEmpty()
+                        select new { tank, unit, factory };
+
+            foreach (var item in query)
+            {
+                Console.WriteLine($"Резервуар: {item.tank.Name}, Описание: {item.tank.Description}, Объем: {item.tank.Volume} / {item.tank.MaxVolume}");
+                Console.WriteLine($"Установка: {item.unit?.Name ?? "Не найден"}, Завод: {item.factory?.Name ?? "Не найден"}");
+                Console.WriteLine(new string('-', 40));
+            }
+        }
+
+        public static void PrintFoundTanksInfoMethod(List<Tank> foundTanks, Unit[] units, Factory[] factories)
+        {
+            if (foundTanks == null || foundTanks.Count == 0)
+            {
+                Console.WriteLine("Резервуары не найдены.");
+                return;
+            }
+
+            var list = foundTanks.GroupJoin(units,
+                                           tank => tank.UnitId,
+                                           unit => unit.Id,
+                                           (tank, unitGroup) => new { tank, unit = unitGroup.FirstOrDefault() })
+                                 .GroupJoin(factories,
+                                            tu => tu.unit?.FactoryId,
+                                            factory => factory.Id,
+                                            (tu, factoryGroup) => new { tu.tank, tu.unit, factory = factoryGroup.FirstOrDefault() });
+
+            foreach (var item in list)
+            {
+                Console.WriteLine($"Резервуар: {item.tank.Name}, Описание: {item.tank.Description}, Объем: {item.tank.Volume} / {item.tank.MaxVolume}");
+                Console.WriteLine($"Установка: {item.unit?.Name ?? "Не найден"}, Завод: {item.factory?.Name ?? "Не найден"}");
+                Console.WriteLine(new string('-', 40));
+            }
+        }
+
     }
 }
