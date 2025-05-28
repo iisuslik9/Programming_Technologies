@@ -13,21 +13,56 @@ namespace ParserJson
             public DateTime Date { get; set; }
         }
 
-
-        IList<string> GetNumbersOfDeals(IEnumerable<Deal> deals)
+        public static IList<string> GetNumbersOfDeals(IEnumerable<Deal> deals)
         {
-            //
+            return deals
+                .Where(d => d.Sum >= 100)
+                .OrderBy(d => d.Date)
+                .Take(5)
+                .OrderByDescending(d => d.Sum)
+                .Select(d => d.Id)
+                .ToList();
         }
-        record SumByMonth(DateTime Month, int Sum);
+        public record SumByMonth(DateTime Month, int Sum);
 
-        IList<SumByMonth> GetSumsByMonth(IEnumerable<Deal> deals)
+        public static IList<SumByMonth> GetSumsByMonth(IEnumerable<Deal> deals)
         {
-            //
+            return deals
+                .GroupBy(d => new DateTime(d.Date.Year, d.Date.Month, 1))
+                .Select(g => new SumByMonth(g.Key, g.Sum(d => d.Sum)))
+                .OrderBy(s => s.Month)
+                .ToList();
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            string jsonFilePath = "../../../JSON_sample_1.json";
+
+
+            string json = File.ReadAllText(jsonFilePath);
+
+            List<Deal>deals = JsonSerializer.Deserialize<List<Deal>>(json);
+            
+
+            if (deals == null || deals.Count == 0)
+            {
+                Console.WriteLine("Сделки не найдены в файле.");
+                return;
+            }
+
+           
+            var dealIds = GetNumbersOfDeals(deals);
+            Console.WriteLine($"Найдено сделок: {dealIds.Count}");
+            Console.WriteLine("Идентификаторы сделок (отсортированы по сумме по убыванию):");
+            Console.WriteLine(string.Join(", ", dealIds));
+
+            var sumsByMonth = GetSumsByMonth(deals);
+            Console.WriteLine("\nСуммы сделок по месяцам:");
+            foreach (var item in sumsByMonth)
+            {
+                Console.WriteLine($"{item.Month:yyyy-MM} - {item.Sum}");
+            }
         }
     }
+    
 }
