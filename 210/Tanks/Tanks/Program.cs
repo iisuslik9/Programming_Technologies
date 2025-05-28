@@ -13,15 +13,84 @@ namespace Tanks
             var tanks = GetTanks();
             var units = GetUnits();
             var factories = GetFactories();
-            Console.WriteLine($"Количество резервуаров: {tanks.Length}, установок: {units.Length}");
 
-            var foundUnit = FindUnit(units, tanks, "Резервуар 2");
-            var factory = FindFactory(factories, foundUnit);
+            bool exit = false;
 
-            Console.WriteLine($"Резервуар 2 принадлежит установке {foundUnit.Name} и заводу {factory.Name}");
+            while (!exit)
+            {
+                Console.Clear();
+                Console.WriteLine("=== меню ===");
+                Console.WriteLine("1. Количество резервуаров и кстановок");
+                Console.WriteLine("2. Установка резервуара 2");
+                Console.WriteLine("3. Общий объем резервуаров");
+                Console.WriteLine("4. Общая сумма загрузки всех резервуаров");
+                Console.WriteLine("5. Информация о всех резервуарах");
+                Console.WriteLine("6. Поиск по имени");
+                Console.WriteLine("0. Выход");
+                Console.Write("Выберите пункт меню: ");
 
-            var totalVolume = GetTotalVolume(tanks);
-            Console.WriteLine($"Общий объем резервуаров: {totalVolume}");
+                string input = Console.ReadLine();
+
+                switch (input)
+                {
+                    case "1":
+                        Console.WriteLine("Выбран 1");
+                        Console.WriteLine($"Количество резервуаров: {tanks.Length}, установок: {units.Length}");
+                        break;
+                    case "2":
+                        Console.WriteLine("Выбран 2");
+                        var foundUnit = FindUnit(units, tanks, "Резервуар 2");
+                        var factory = FindFactory(factories, foundUnit);
+                        Console.WriteLine($"Резервуар 2 принадлежит установке {foundUnit.Name} и заводу {factory.Name}");
+                        break;
+                    case "3":
+                        Console.WriteLine("Выбран 3");
+                        var totalVolume = GetTotalVolume(tanks);
+                        Console.WriteLine($"Общий объем резервуаров: {totalVolume}");
+                        break;
+                    case "4":
+                        Console.WriteLine("Выбран 4");
+                        var totalMaxVolume = GetTotalMaxVolume(tanks);
+                        Console.WriteLine($"Общая сумма загрузки всех резервуаров: {totalMaxVolume}");
+                        break;
+                    case "5":
+                        Console.WriteLine("Выбран 5");
+                        PrintAllTanksInfo(tanks, units, factories);
+                        break;
+                    case "6":
+                        Console.WriteLine("Вы выбрали: Найти резервуар по имени");
+                        Console.Write("Введите имя резервуара: ");
+                        string tankName = Console.ReadLine();
+                        // Здесь вызов метода поиска резервуара по имени
+                        break;                   
+                    case "0":
+                        Console.WriteLine("Выход из программы...");
+                        exit = true;
+                        break;
+                    default:
+                        Console.WriteLine("Неверный выбор. Попробуйте ещё раз.");
+                        break;
+                }
+
+                if (!exit)
+                {
+                    Console.WriteLine("\nНажмите любую клавишу, чтобы продолжить...");
+                    Console.ReadKey();
+                }
+            }
+
+            //var tanks = GetTanks();
+            //var units = GetUnits();
+            //var factories = GetFactories();
+            //Console.WriteLine($"Количество резервуаров: {tanks.Length}, установок: {units.Length}");
+
+            //var foundUnit = FindUnit(units, tanks, "Резервуар 2");
+            //var factory = FindFactory(factories, foundUnit);
+
+            //Console.WriteLine($"Резервуар 2 принадлежит установке {foundUnit.Name} и заводу {factory.Name}");
+
+            //var totalVolume = GetTotalVolume(tanks);
+            //Console.WriteLine($"Общий объем резервуаров: {totalVolume}");
         }
 
         // реализуйте этот метод, чтобы он возвращал массив резервуаров, согласно приложенным таблицам
@@ -101,6 +170,42 @@ namespace Tanks
                 totalVolume += tank.Volume;
             }
             return totalVolume;
+        }
+
+        /// <summary>
+        /// Метод общей суммы загрузки всех резервуаров
+        /// </summary>
+        /// <param name="tanks">Массив резервуаров</param>
+        /// <returns>Общая сумма загрузки всех резервуаров</returns>
+        public static int GetTotalMaxVolume(Tank[] tanks)
+        {
+            int totalMaxVolume = 0;
+            foreach (var tank in tanks)
+            {
+                totalMaxVolume += tank.MaxVolume;
+            }
+            return totalMaxVolume;
+        }
+
+        // Выводит в консоль все резервуары с указанием установки и завода
+        public static void PrintAllTanksInfo(Tank[] tanks, Unit[] units, Factory[] factories)
+        {
+            
+            Console.WriteLine("Список всех резервуаров с цехами и фабриками:");
+
+            foreach (var tank in tanks)
+            {
+                var unit = Array.Find(units, u => u.Id == tank.UnitId);
+
+                var factory = unit != null ? Array.Find(factories, f => f.Id == unit.FactoryId) : null;
+
+                Console.WriteLine($"Резервуар: {tank.Name} (Объем: {tank.Volume}/{tank.MaxVolume})");
+                Console.WriteLine($"  Установка: {unit?.Name ?? "Не найден"}");
+                Console.WriteLine($"  Завод: {factory?.Name ?? "Не найден"}");
+                Console.WriteLine(new string('-', 40));
+            }
+
+            
         }
     }
 
