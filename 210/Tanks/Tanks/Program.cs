@@ -46,7 +46,7 @@ namespace Tanks
                     case "1":
                         
                         var counts = Queries.GetCountsMethod(tanks, units);
-                        // var counts = Queries.GetCountsQuery(tanks, units);
+                        //var counts = Queries.GetCountsQuery(tanks, units);
                         Console.WriteLine($"Количество резервуаров: {counts.tanksCount}, установок: {counts.unitsCount}");
                         break;
 
