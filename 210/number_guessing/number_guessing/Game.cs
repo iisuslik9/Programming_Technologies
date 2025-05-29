@@ -11,10 +11,10 @@ namespace number_guessing
     public class Game
     {
         private readonly IOutput _output;
-        private readonly RangeValidator _rangeValidator;
+        private readonly IRangeValidator _rangeValidator;
         private readonly Random _random = new();
 
-        public Game(IOutput output, RangeValidator rangeValidator)
+        public Game(IOutput output, IRangeValidator rangeValidator)
         {
             _output = output;
             _rangeValidator = rangeValidator;

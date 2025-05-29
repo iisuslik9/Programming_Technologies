@@ -38,13 +38,15 @@ namespace number_guessing
                 var services = new ServiceCollection()
                     .AddTransient<IOutput, ConsoleOutput>()
                     .AddTransient<IValidator<string>, NumberValidator>()
-                    .AddTransient<IValidator<string>, RangeValidator>()
-                    .AddSingletone<number_guessing.Game>();
-
-                var validator = new RangeValidator(1, 100);
+                    .AddTransient<IRangeValidator, RangeValidator>()
+                    .AddSingleton<Game>();
+                
+                using var serviceProvider = services.BuildServiceProvider();
+                //var validator = new RangeValidator(1, 100);
+                var validator = serviceProvider.GetService<IRangeValidator>();
                 //всместо создания объекта класса new consoleOutput связать интерфейс и класс через dependency injection
                 //var game = new Game(new ConsoleOutput(), validator);
-                var game = IServiceProvider.GetService<Game>();
+                var game = serviceProvider.GetService<Game>();
                 game.UpdateRange(9, 5);
                 game.Play();
 

@@ -6,19 +6,26 @@ using System.Threading.Tasks;
 
 namespace number_guessing.Validators
 {
-    public class RangeValidator : IValidator<int>
+    public interface IRangeValidator
+    {
+        public int Min { get; set; }
+        public int Max { get; set; }
+        public ValidationResult Validate(int input);
+
+    }
+    public class RangeValidator : IRangeValidator
     {
         private int _min;
         private int _max;
 
-        public RangeValidator(int min, int max)
-        {
-            if (max > min)
-            {
-                _min = min;
-                _max = max;
-            }               
-        }
+        //public RangeValidator(int min, int max)
+        //{
+        //    if (max > min)
+        //    {
+        //        _min = min;
+        //        _max = max;
+        //    }               
+        //}
 
         public int Min
         {
